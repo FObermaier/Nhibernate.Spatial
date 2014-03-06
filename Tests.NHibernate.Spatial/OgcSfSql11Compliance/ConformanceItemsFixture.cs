@@ -59,6 +59,11 @@ PARAMETER[""Scale_Factor"", 0.9996],
 PARAMETER[""Latitude_of_origin"", 0.0],
 UNIT[""Meter"", 1.0]]";
 
+	    protected const string SpatialReferenceSystemProj4 =
+	        "+proj=utm +zone=14 +ellps=WGS72 +units=m +no_defs//";
+
+	    protected const string SpatialReferenceSystemName =
+	        "WGS 72 / UTM zone 14N";
 
 		protected override void OnBeforeCreateSchema()
 		{
@@ -66,7 +71,7 @@ UNIT[""Meter"", 1.0]]";
 			{
                 if (Metadata.SupportsSpatialMetadata(session, MetadataClass.SpatialReferenceSystem))
                 {
-                    session.Save(new SpatialReferenceSystem(101, "POSC", 32214, SpatialReferenceSystemWKT));
+                    session.Save(new SpatialReferenceSystem(101, "POSC", 32214, SpatialReferenceSystemWKT) { Proj4Text = SpatialReferenceSystemProj4 });
                     session.Flush();
                 }
 			}
@@ -299,7 +304,7 @@ UNIT[""Meter"", 1.0]]";
 		/// </code>
 		/// </summary>
 		[Test]
-		public void ConformanceItemT03Hql()
+		public virtual void ConformanceItemT03Hql()
 		{
 			if (!Metadata.SupportsSpatialMetadata(session, MetadataClass.GeometryColumn))
             {
@@ -317,7 +322,7 @@ UNIT[""Meter"", 1.0]]";
 		}
 
 		[Test]
-		public void ConformanceItemT03Linq()
+		public virtual void ConformanceItemT03Linq()
 		{
 			if (!Metadata.SupportsSpatialMetadata(session, MetadataClass.GeometryColumn))
             {

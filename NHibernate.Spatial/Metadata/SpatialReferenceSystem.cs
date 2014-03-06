@@ -91,5 +91,16 @@ namespace NHibernate.Spatial.Metadata
 			set { this.wellKnownText = value; }
 		}
 
+        private string proj4Text;
+        /// <summary>
+        /// Gets or sets the proj4 text.
+        /// </summary>
+        /// <value>The proj4 text.</value>
+        public virtual string Proj4Text
+        {
+            get { return this.proj4Text; }
+            set { this.proj4Text = value; }
+        }
+
 	}
 }

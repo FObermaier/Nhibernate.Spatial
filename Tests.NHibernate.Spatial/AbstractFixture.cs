@@ -158,7 +158,7 @@ namespace Tests.NHibernate.Spatial
 			}
 		}
 
-		public void DeleteMappings(ISession session)
+		public virtual void DeleteMappings(ISession session)
 		{
 			foreach (Type type in this.Mappings)
 			{

@@ -250,7 +250,7 @@ namespace NHibernate.Spatial.Type
 		/// the implementation.
 		/// </summary>
 		/// <param name="parameters"></param>
-		public void SetParameterValues(IDictionary<string, string> parameters)
+		public virtual void SetParameterValues(IDictionary<string, string> parameters)
 		{
 			if (parameters != null)
 			{

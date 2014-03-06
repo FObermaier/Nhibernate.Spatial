@@ -130,7 +130,7 @@ namespace Tests.NHibernate.Spatial
 		}
 
 		[Test]
-		public void EnvelopeAll()
+		public virtual void EnvelopeAll()
 		{
 			IList results = _session.CreateCriteria(typeof(County))
 				.SetProjection(SpatialProjections.Envelope("Boundaries"))
@@ -161,7 +161,7 @@ namespace Tests.NHibernate.Spatial
 		}
 
 		[Test]
-		public void IntersectionAll()
+		public virtual void IntersectionAll()
 		{
 			IList results = _session.CreateCriteria(typeof(County))
 				.SetProjection(SpatialProjections.Intersection("Boundaries"))

@@ -170,7 +170,7 @@ namespace Tests.NHibernate.Spatial
 		}
 
 		[Test]
-		public void CountSpatialEmpty()
+		public virtual void CountSpatialEmpty()
 		{
 			IList results = _session.CreateCriteria(typeof(Simple))
 				.Add(SpatialRestrictions.IsEmpty("Geometry"))
