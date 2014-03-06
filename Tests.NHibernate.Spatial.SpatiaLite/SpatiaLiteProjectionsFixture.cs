@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using NHibernate.Cfg;
 using NHibernate.Driver;
 using NHibernate.Criterion;
@@ -20,6 +21,11 @@ namespace Tests.NHibernate.Spatial
 		{
 			TestConfigurationProjection.Configure(configuration);
 		}
+
+        protected override Type GeometryType
+        {
+            get { return typeof(global::NHibernate.Spatial.Type.SpatiaLiteGeometryType); }
+        }
 
         /*
         [Ignore("Collect not implemented in SpatiaLite")]

@@ -1,4 +1,5 @@
-﻿using NHibernate.Cfg;
+﻿using System;
+using NHibernate.Cfg;
 using NUnit.Framework;
 
 namespace Tests.NHibernate.Spatial
@@ -10,5 +11,10 @@ namespace Tests.NHibernate.Spatial
 		{
 			TestConfiguration.Configure(configuration);
 		}
+
+	    protected override Type GeometryType
+	    {
+	        get { return typeof (global::NHibernate.Spatial.Type.MsSqlSpatialGeometryType); }
+	    }
 	}
 }

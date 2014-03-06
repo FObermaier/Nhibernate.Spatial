@@ -1349,7 +1349,7 @@ UNIT[""Meter"", 1.0]]";
 				from t in session.Query<RoadSegment>()
 				where t.Fid == 102
 				select ((ILineString)t.Centerline)
-                .GetPointN(0);
+                .GetPointN(1);
 
 			IGeometry geometry = query.Single();
 			IGeometry expected = Wkt.Read("POINT( 0 18 )");
@@ -1644,7 +1644,7 @@ UNIT[""Meter"", 1.0]]";
 			var query =
 				from t in session.Query<Lake>()
 				where t.Name == "Blue Lake"
-				select ((IPolygon)t.Shore).GetInteriorRingN(0);
+				select ((IPolygon)t.Shore).GetInteriorRingN(1);
 
 			IGeometry geometry = query.Single();
 			IGeometry expected = Wkt.Read("LINESTRING(59 18, 67 18, 67 13, 59 13, 59 18)");
@@ -1747,7 +1747,7 @@ UNIT[""Meter"", 1.0]]";
 			var query =
 				from t in session.Query<DividedRoute>()
 				where t.Name == "Route 75"
-				select t.Centerlines.GetGeometryN(1);
+				select t.Centerlines.GetGeometryN(2);
 
 			IGeometry geometry = query.Single();
 			IGeometry expected = Wkt.Read("LINESTRING( 16 0, 16 23, 16 48 )");

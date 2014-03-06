@@ -220,7 +220,17 @@ namespace NHibernate.Spatial.Type
 			{
 				try
 				{
-					return ga.SRID == gb.SRID && ga.Equals(gb);
+				    if (ga.SRID != gb.SRID)
+				        return false;
+
+                    // todo: move this to NTS
+				    if (ga.OgcGeometryType == OgcGeometryType.GeometryCollection &&
+				        gb.OgcGeometryType == OgcGeometryType.GeometryCollection)
+				    {
+				        if (ga.IsEmpty && gb.IsEmpty) return true;
+				    }
+
+                    return  ga.Equals(gb);
 				}
 				catch (TopologyException)
 				{

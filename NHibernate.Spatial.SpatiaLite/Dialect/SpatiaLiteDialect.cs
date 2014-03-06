@@ -213,7 +213,7 @@ namespace NHibernate.Spatial.Dialect
             switch (analysis)
             {
                 case SpatialAnalysis.Buffer:
-                    if (!(extraArgument is Parameter /*|| SqlString.Parameter.Equals(extraArgument)*/))
+                    if (!(extraArgument is Parameter || new SqlString(Parameter.Placeholder).Equals(extraArgument)))
                     {
                         extraArgument = Convert.ToString(extraArgument, System.Globalization.NumberFormatInfo.InvariantInfo);
                     }

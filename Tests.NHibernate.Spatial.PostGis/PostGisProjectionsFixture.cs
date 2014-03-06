@@ -1,4 +1,5 @@
-﻿using NHibernate.Cfg;
+﻿using System;
+using NHibernate.Cfg;
 using NHibernate.Driver;
 using NHibernate.Criterion;
 using NHibernate.Spatial.Dialect;
@@ -13,5 +14,10 @@ namespace Tests.NHibernate.Spatial
 		{
 			TestConfiguration.Configure(configuration);
 		}
-	}
+
+        protected override Type GeometryType
+        {
+            get { return typeof(global::NHibernate.Spatial.Type.PostGisGeometryType); }
+        }
+    }
 }

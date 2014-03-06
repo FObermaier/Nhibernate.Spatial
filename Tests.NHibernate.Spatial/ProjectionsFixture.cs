@@ -28,10 +28,7 @@ namespace Tests.NHibernate.Spatial
 			}
 		}
 
-	    protected virtual Type GeometryType
-	    {
-            get { return GeometryType; }
-	    }
+	    protected abstract Type GeometryType { get; }
 
 		protected override void OnSetUp()
 		{
