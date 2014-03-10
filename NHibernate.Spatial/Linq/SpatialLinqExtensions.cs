@@ -1,4 +1,9 @@
-﻿using GeoAPI.Geometries;
+﻿using System.Xml;
+using GeoAPI.Geometries;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
+using NHibernate.Spatial.Dialect;
+using NHibernate.Spatial.Linq.Functions;
 
 namespace NHibernate.Spatial.Linq
 {
@@ -30,61 +35,207 @@ namespace NHibernate.Spatial.Linq
         { return geometry == null; }
 
 		public static int GetDimension(this IGeometry geometry)
-		{ throw new SpatialLinqMethodException(); }	
+		{ return (int)geometry.Dimension; }	
 		
 		public static IGeometry Simplify(this IGeometry geometry, double distance)
-		{ throw new SpatialLinqMethodException(); }	
+		{
+		    return geometry.Simplify(distance);
+		}	
 
 		public static IGeometry Transform(this IGeometry geometry, int srid)
-		{ throw new SpatialLinqMethodException(); }	
-
-		public static IGeometryCollection ToGeometryCollection(this string text, int srid)
-		{ throw new SpatialLinqMethodException(); }	
-
-		public static IGeometryCollection ToGeometryCollection(this byte[] wkb, int srid)
-		{ throw new SpatialLinqMethodException(); }	
-
-		public static IGeometry ToGeometry(this string text, int srid)
-		{ throw new SpatialLinqMethodException(); }	
-
-		public static IGeometry ToGeometry(this byte[] wkb, int srid)
-		{ throw new SpatialLinqMethodException(); }	
-
-		public static ILineString ToLineString(this string text, int srid)
-		{ throw new SpatialLinqMethodException(); }	
-
-		public static ILineString ToLineString(this byte[] wkb, int srid)
-		{ throw new SpatialLinqMethodException(); }	
-
-		public static IPoint ToPoint(this string text, int srid)
 		{ throw new SpatialLinqMethodException(); }
 
-		public static IPoint ToPoint(this byte[] wkb, int srid)
-		{ throw new SpatialLinqMethodException(); }	
+        public static IGeometryCollection ToGeometryCollection(this string text, int srid)
+        {
+            var res = ToGeometry(text, srid);
+            if (res==null)
+                return new GeometryCollection(null) { SRID = srid };
+
+            if (res.OgcGeometryType == OgcGeometryType.GeometryCollection) 
+                return (IGeometryCollection)res;
+
+	        return res.Factory.CreateGeometryCollection(new []{res});
+	    }
+
+	    public static IGeometryCollection ToGeometryCollection(this byte[] wkb, int srid)
+	    {
+	        var res = ToGeometry(wkb, srid);
+            if (res == null)
+                return new GeometryCollection(null) { SRID = srid };
+
+            if (res.OgcGeometryType == OgcGeometryType.GeometryCollection)
+                return (IGeometryCollection)res;
+
+            return res.Factory.CreateGeometryCollection(new[] { res });
+	    }
+
+	    public static IGeometry ToGeometry(this string text, int srid)
+	    {
+	        var factory = GeoAPI.GeometryServiceProvider.Instance.CreateGeometryFactory(srid);
+	        if (string.IsNullOrEmpty(text))
+	            factory.CreateGeometryCollection(null);
+
+	        var reader = new WKTReader(factory);
+	        var res = reader.Read(text);
+	        res.SRID = srid;
+	        return res;
+	    }
+
+	    public static IGeometry ToGeometry(this byte[] wkb, int srid)
+	    {
+	        if (wkb == null || wkb.Length == 0)
+	        {
+	            return GeoAPI.GeometryServiceProvider.Instance.CreateGeometryFactory(srid).CreateGeometryCollection(null);
+	        }
+
+	        var reader = new WKBReader(GeoAPI.GeometryServiceProvider.Instance);
+	        var res = reader.Read(wkb);
+	        res.SRID = srid;
+
+	        return res;
+	    }
+
+	    public static ILineString ToLineString(this string text, int srid)
+	    {
+	        var res = text.ToGeometry(srid);
+	        if (res.OgcGeometryType == OgcGeometryType.LineString)
+	            return (ILineString)res;
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build LineString from\n{0}", text));
+	    }
+
+	    public static ILineString ToLineString(this byte[] wkb, int srid)
+	    {
+            var res = wkb.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.LineString)
+                return (ILineString)res;
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build LineString from\n{0}", WKBWriter.ToHex(wkb)));
+        }
+
+	    public static IPoint ToPoint(this string text, int srid)
+	    {
+            var res = text.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.Point)
+                return (IPoint)res;
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build Point from\n{0}", text));
+        }
+
+	    public static IPoint ToPoint(this byte[] wkb, int srid)
+	    {
+            var res = wkb.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.Point)
+                return (IPoint)res;
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build Point from\n{0}", WKBWriter.ToHex(wkb)));
+        }	
 
 		public static IPolygon ToPolygon(this string text, int srid)
-		{ throw new SpatialLinqMethodException(); }	
+        {
+            var res = text.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.Polygon)
+                return (IPolygon)res;
+
+		    if (res.OgcGeometryType == OgcGeometryType.LineString)
+		    {
+		        var lineString = (ILineString) res;
+                if (lineString.IsClosed)
+                    return res.Factory.CreatePolygon(lineString.CoordinateSequence);
+		    }
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build Polygon from\n{0}", text));
+        }
 
 		public static IPolygon ToPolygon(this byte[] wkb, int srid)
-		{ throw new SpatialLinqMethodException(); }	
+        {
+            var res = wkb.ToGeometry(srid);
+
+            if (res.OgcGeometryType == OgcGeometryType.Polygon)
+                return (IPolygon)res;
+
+            if (res.OgcGeometryType == OgcGeometryType.LineString)
+            {
+                var lineString = (ILineString)res;
+                if (lineString.IsClosed)
+                    return res.Factory.CreatePolygon(lineString.CoordinateSequence);
+            }
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build Polygon from\n{0}", WKBWriter.ToHex(wkb)));
+        }	
 
 		public static IMultiLineString ToMultiLineString(this string text, int srid)
-		{ throw new SpatialLinqMethodException(); }	
+        {
+            var res = text.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.MultiLineString)
+                return (IMultiLineString)res;
+
+            if (res.OgcGeometryType == OgcGeometryType.LineString)
+                return res.Factory.CreateMultiLineString(new[] { (ILineString)res });
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build MultiLineString from\n{0}", text));
+        }
 
 		public static IMultiLineString ToMultiLineString(this byte[] wkb, int srid)
-		{ throw new SpatialLinqMethodException(); }	
+        {
+            var res = wkb.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.MultiLineString)
+                return (IMultiLineString)res;
+
+            if (res.OgcGeometryType == OgcGeometryType.LineString)
+                return res.Factory.CreateMultiLineString(new [] {(ILineString)res});
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build MultiLineString from\n{0}", WKBWriter.ToHex(wkb)));
+        }	
 
 		public static IMultiPoint ToMultiPoint(this string text, int srid)
-		{ throw new SpatialLinqMethodException(); }
+        {
+            var res = text.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.MultiPoint)
+                return (IMultiPoint)res;
+
+            if (res.OgcGeometryType == OgcGeometryType.Point)
+                return res.Factory.CreateMultiPoint(new[] { (IPoint)res });
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build MultiPoint from\n{0}", text));
+        }
 
 		public static IMultiPoint ToMultiPoint(this byte[] wkb, int srid)
-		{ throw new SpatialLinqMethodException(); }	
+        {
+            var res = wkb.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.MultiPoint)
+                return (IMultiPoint)res;
+
+            if (res.OgcGeometryType == OgcGeometryType.Point)
+                return res.Factory.CreateMultiPoint(new[] { (IPoint)res });
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build MultiPoint from\n{0}", WKBWriter.ToHex(wkb)));
+        }	
 
 		public static IMultiPolygon ToMultiPolygon(this string text, int srid)
-		{ throw new SpatialLinqMethodException(); }
+        {
+            var res = text.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.MultiPolygon)
+                return (IMultiPolygon)res;
+
+		    if (res.OgcGeometryType == OgcGeometryType.Polygon)
+		        return res.Factory.CreateMultiPolygon(new[] {(IPolygon) res});
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build MultiPolygon from\n{0}", text));
+        }
 
 		public static IMultiPolygon ToMultiPolygon(this byte[] wkb, int srid)
-		{ throw new SpatialLinqMethodException(); }	
+        {
+            var res = wkb.ToGeometry(srid);
+            if (res.OgcGeometryType == OgcGeometryType.MultiPolygon)
+                return (IMultiPolygon)res;
+
+            if (res.OgcGeometryType == OgcGeometryType.Polygon)
+                return res.Factory.CreateMultiPolygon(new[] { (IPolygon)res });
+
+
+            throw new SpatialLinqMethodException(string.Format("Failed to build MultiPolygon from\n{0}", WKBWriter.ToHex(wkb)));
+        }	
 	
 	}
 }
