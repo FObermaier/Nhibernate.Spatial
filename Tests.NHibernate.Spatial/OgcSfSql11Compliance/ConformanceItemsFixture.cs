@@ -2,11 +2,15 @@ using System;
 using System.Collections;
 using System.Linq;
 using GeoAPI.Geometries;
+using NetTopologySuite.IO;
 using NHibernate;
 using NHibernate.Criterion;
 using NHibernate.Linq;
+using NHibernate.Linq.Visitors;
+using NHibernate.Spatial.Dialect;
 using NHibernate.Spatial.Linq;
 using NHibernate.Spatial.Metadata;
+using NHibernate.Util;
 using NUnit.Framework;
 using Tests.NHibernate.Spatial.OgcSfSql11Compliance.Model;
 
@@ -675,7 +679,6 @@ UNIT[""Meter"", 1.0]]";
 		}
 
 		[Test]
-		[Ignore("TODO: ToPolygon")]
 		public void ConformanceItemT09Linq()
 		{
 			var query =
@@ -1997,58 +2000,60 @@ UNIT[""Meter"", 1.0]]";
 
 		#region Queries testing functions in section 3.2.19.2 (T37 - T45)
 
-		/// <summary>
-		/// Conformance Item T37	
-		/// Equals(g1 Geometry, g2 Geometry) : Integer
-		/// For this test we will determine if the geometry of Goose Island is equal
-		/// to the same geometry as consructed from it's WKT representation.
-		///
-		/// ANSWER: 1
-		/// *** Adaptation Alert ***
-		/// If the implementer provides Equals as a boolean function, instead of as
-		/// an INTEGER function, then:
-		/// ANSWER: TRUE or 't'
-		///
-		/// Original SQL:
-		/// <code>
-		///		SELECT Equals(boundary, PolygonFromText('POLYGON( ( 67 13, 67 18, 59 18, 59 13, 67 13) )',1))
-		///		FROM named_places 
-		///		WHERE name = 'Goose Island';
-		/// </code>
-		/// </summary>
-		/// <remarks>
-		/// Correction:
-		/// * SRID changed to 101. We require SRIDs are the same for binary operations.
-		/// </remarks>
-		[Test]
+	    /// <summary>
+	    /// Conformance Item T37	
+	    /// Equals(g1 Geometry, g2 Geometry) : Integer
+	    /// For this test we will determine if the geometry of Goose Island is equal
+	    /// to the same geometry as consructed from it's WKT representation.
+	    ///
+	    /// ANSWER: 1
+	    /// *** Adaptation Alert ***
+	    /// If the implementer provides Equals as a boolean function, instead of as
+	    /// an INTEGER function, then:
+	    /// ANSWER: TRUE or 't'
+	    ///
+	    /// Original SQL:
+	    /// <code>
+	    ///		SELECT Equals(boundary, PolygonFromText('POLYGON( ( 67 13, 67 18, 59 18, 59 13, 67 13) )',1))
+	    ///		FROM named_places 
+	    ///		WHERE name = 'Goose Island';
+	    /// </code>
+	    /// </summary>
+	    /// <remarks>
+	    /// Correction:
+	    /// * SRID changed to 101. We require SRIDs are the same for binary operations.
+	    /// </remarks>
+
+        [Test]
 		public void ConformanceItemT37Hql()
 		{
-			string query =
-                @"select NHSP.Equals(t.Boundary, NHSP.PolyFromText('POLYGON( ( 67 13, 67 18, 59 18, 59 13, 67 13) )',101))
+			string hql =
+                @"select NHSP.Equals(t.Boundary, :poly)
                 from NamedPlace t
                 where t.Name = 'Goose Island'
                 ";
-			bool result = session.CreateQuery(query)
-				.UniqueResult<bool>();
+		    var query = session.CreateQuery(hql)
+		        .SetParameter("poly", "POLYGON( ( 67 13, 67 18, 59 18, 59 13, 67 13) )".ToPolygon(101),
+		            SpatialDialect.LastInstantiated.GeometryType);
+
+            var result = query.UniqueResult<bool>();
 
 			Assert.IsTrue(result);
 		}
 
-		[Test]
-		[Ignore("TODO: ToPolygon")]
-		public void ConformanceItemT37Linq()
-		{
-			var query =
+	    [Test]//, Ignore("Polygon argument to t.Boundary.Equals is not transformed to the geometry user type")]
+	    public void ConformanceItemT37Linq()
+	    {
+            var query =
 				from t in session.Query<NamedPlace>()
 				where t.Name == "Goose Island"
-				select t.Boundary.Equals("POLYGON( ( 67 13, 67 18, 59 18, 59 13, 67 13) )".ToPolygon(101));
+                select t.Boundary.Equals(SpatialLinqExtensions.ToDbGeometry("POLYGON( ( 67 13, 67 18, 59 18, 59 13, 67 13) )".ToPolygon(101)));
 
-			bool result = query.Single();
+            bool result = query.Single();
+            Assert.IsTrue(result);
+        }
 
-			Assert.IsTrue(result);
-		}
-
-		/// <summary>
+        /// <summary>
 		/// Conformance Item T38	
 		/// Disjoint(g1 Geometry, g2 Geometry) : Integer
 		/// For this test we will determine if the geometry of Route 75 is disjoint

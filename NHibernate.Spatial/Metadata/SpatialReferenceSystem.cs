@@ -41,65 +41,65 @@ namespace NHibernate.Spatial.Metadata
 		/// <param name="wellKnownText">The well known text.</param>
 		public SpatialReferenceSystem(int srid, string authorityName, int authoritySRID, string wellKnownText)
 		{
-			this.SRID = srid;
-			this.AuthorityName = authorityName;
-			this.AuthoritySRID = authoritySRID;
-			this.WellKnownText = wellKnownText;
+			_srid = srid;
+			_authorityName = authorityName;
+			_authoritySRID = authoritySRID;
+			_wellKnownText = wellKnownText;
 		}
 
-		private int srid;
+		private int _srid;
 		/// <summary>
 		/// Gets or sets the SRID.
 		/// </summary>
 		/// <value>The SRID.</value>
 		public virtual int SRID
 		{
-			get { return this.srid; }
-			set { this.srid = value; }
+			get { return _srid; }
+			set { _srid = value; }
 		}
 
-		private string authorityName;
+		private string _authorityName;
 		/// <summary>
 		/// Gets or sets the name of the authority.
 		/// </summary>
 		/// <value>The name of the authority.</value>
 		public virtual string AuthorityName
 		{
-			get { return this.authorityName; }
-			set { this.authorityName = value; }
+			get { return _authorityName; }
+			set { _authorityName = value; }
 		}
 
-		private int authoritySRID;
+		private int _authoritySRID;
 		/// <summary>
 		/// Gets or sets the authority SRID.
 		/// </summary>
 		/// <value>The authority SRID.</value>
 		public virtual int AuthoritySRID
 		{
-			get { return this.authoritySRID; }
-			set { this.authoritySRID = value; }
+			get { return _authoritySRID; }
+			set { _authoritySRID = value; }
 		}
 
-		private string wellKnownText;
+		private string _wellKnownText;
 		/// <summary>
 		/// Gets or sets the well known text.
 		/// </summary>
 		/// <value>The well known text.</value>
 		public virtual string WellKnownText
 		{
-			get { return this.wellKnownText; }
-			set { this.wellKnownText = value; }
+			get { return _wellKnownText; }
+			set { _wellKnownText = value; }
 		}
 
-        private string proj4Text;
+        private string _proj4Text;
         /// <summary>
         /// Gets or sets the proj4 text.
         /// </summary>
         /// <value>The proj4 text.</value>
         public virtual string Proj4Text
         {
-            get { return this.proj4Text; }
-            set { this.proj4Text = value; }
+            get { return _proj4Text; }
+            set { _proj4Text = value; }
         }
 
 	}

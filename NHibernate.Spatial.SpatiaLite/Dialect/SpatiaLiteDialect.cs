@@ -1,6 +1,6 @@
 using System;
+using System.Globalization;
 using System.Text;
-using System.Threading;
 using NHibernate.Dialect;
 using NHibernate.Spatial.Dialect.Function;
 using NHibernate.Spatial.Metadata;
@@ -14,11 +14,10 @@ namespace NHibernate.Spatial.Dialect
     {
         private static readonly IType GeometryTypeInstance = new CustomType(typeof(SpatiaLiteGeometryType), null);
 
-        private const string IntersectionAggregateName = "NHSP_IntersectionAggregate";
-
         public SpatiaLiteDialect()
         {
             SpatialDialect.LastInstantiated = this;
+            
             RegisterBasicFunctions();
             RegisterFunctions();
         }
@@ -172,7 +171,7 @@ namespace NHibernate.Spatial.Dialect
                 .Add("Transform(")
                 .AddObject(geometry)
                 .Add(",")
-                .Add(srid.ToString())
+                .Add(srid.ToString(NumberFormatInfo.InvariantInfo))
                 .Add(")")
                 .ToSqlString();
         }
@@ -215,8 +214,10 @@ namespace NHibernate.Spatial.Dialect
                 case SpatialAnalysis.Buffer:
                     if (!(extraArgument is Parameter || new SqlString(Parameter.Placeholder).Equals(extraArgument)))
                     {
-                        extraArgument = Convert.ToString(extraArgument, System.Globalization.NumberFormatInfo.InvariantInfo);
+                        extraArgument = Convert.ToString(extraArgument, NumberFormatInfo.InvariantInfo);
                     }
+                    var t = new SqlStringBuilder();
+                    
                     return new SqlStringBuilder(6)
                         .Add(SpatialDialect.IsoPrefix)
                         .Add("Buffer(")
@@ -297,7 +298,7 @@ namespace NHibernate.Spatial.Dialect
 						"T*****FF*",
 						"*T****FF*",
 						"***T**FF*",
-						"****T*FF*",
+						"****T*FF*"
 					};
                     var builder = new SqlStringBuilder();
                     builder.Add("(");
@@ -364,7 +365,7 @@ namespace NHibernate.Spatial.Dialect
                 .Add(".")
                 .Add(geometryColumnName)
                 .Add(", ")
-                .AddParameter()
+                .AddParameter() 
                 .Add("))")
                 .ToSqlString();
         }
@@ -389,15 +390,15 @@ namespace NHibernate.Spatial.Dialect
         {
             var builder = new StringBuilder();
 
-            builder.AppendFormat("SELECT RecoverGeometryColumn('{0}','{1}',{2},'{3}', '{4}')",
+            builder.AppendFormat("SELECT RecoverGeometryColumn('{0}','{1}',{2},'{3}','{4}')",
                 table, column, srid, subtype, ToXyzm(dimension));
 
             builder.Append(MultipleQueriesSeparator);
-            
-            builder.AppendFormat("UPDATE \"geometry_columns\" SET \"type\"='{2}' WHERE \"f_table_name\"='{0}' AND \"f_geometry_column\"='{1}'",
-                table, column, subtype);
 
-            builder.Append(MultipleQueriesSeparator);
+            //builder.AppendFormat("UPDATE \"geometry_columns\" SET \"geometry_type\"={2} WHERE \"f_table_name\"='{0}' AND \"f_geometry_column\"='{1}'",
+            //    table, column, geometryType);
+
+            //builder.Append(MultipleQueriesSeparator);
 
             builder.AppendFormat("SELECT CreateSpatialIndex('{0}','{1}')",
                 table, column);
@@ -419,6 +420,28 @@ namespace NHibernate.Spatial.Dialect
             return "XY";
         }
 
+        private static int ToGeometryType(string subtype)
+        {
+            switch (subtype)
+            {
+                case "POINT":
+                    return 1;
+                case "LINESTRING":
+                    return 2;
+                case "POLYGON":
+                    return 3;
+                case "MULTIPOINT":
+                    return 4;
+                case "MULTILINESTRING":
+                    return 5;
+                case "MULTIPOLYGON":
+                    return 6;
+                case "GEOMETRYCOLLECTION":
+                    return 7;
+                default:
+                    throw new Exception("Should never reach here");
+            }
+        }
         /// <summary>
         /// Gets the spatial drop string.
         /// </summary>
@@ -450,7 +473,7 @@ namespace NHibernate.Spatial.Dialect
 
             builder.Append(MultipleQueriesSeparator);
 
-            builder.AppendFormat("DELETE FROM geometry_table where f_table_name = '{0}' AND f_geometry_column = '{1}';",
+            builder.AppendFormat("DELETE FROM geometry_columns where f_table_name = '{0}' AND f_geometry_column = '{1}';",
                 table, column);
             /*
             builder.Append(MultipleQueriesSeparator);

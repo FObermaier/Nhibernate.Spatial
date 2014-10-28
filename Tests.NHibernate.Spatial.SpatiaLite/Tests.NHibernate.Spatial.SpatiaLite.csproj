@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tests.NHibernate.Spatial</RootNamespace>
-    <AssemblyName>Tests.NHibernate.Spatial.SpatiaLite2</AssemblyName>
+    <AssemblyName>Tests.NHibernate.Spatial.SpatiaLite</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -69,10 +69,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NetTopologySuite.1.13.2\lib\net35-client\NetTopologySuite.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
@@ -84,21 +80,17 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.SQLite, Version=1.0.86.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\System.Data.SQLite.1.0.86.0\lib\net20\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.SQLite.Linq">
+      <HintPath>..\packages\System.Data.SQLite.1.0.86.0\lib\net20\System.Data.SQLite.Linq.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
-    <When Condition=" '$(PlatformTarget)'=='x86' ">
-      <ItemGroup>
-        <Reference Include="System.Data.SQLite, Version=1.0.76.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\System.Data.SQLite.x86.1.0.76.0\lib\net20\System.Data.SQLite.dll</HintPath>
-        </Reference>
-        <Reference Include="System.Data.SQLite.Linq, Version=1.0.76.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\packages\System.Data.SQLite.x86.1.0.76.0\lib\net20\System.Data.SQLite.Linq.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
+    <When Condition=" '$(PlatformTarget)'=='x86' " />
     <Otherwise>
       <ItemGroup>
         <Reference Include="System.Data.SQLite, Version=1.0.76.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x64">
@@ -138,6 +130,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\src\NHibernate\NHibernate.csproj">
+      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NHibernate.Spatial.SpatiaLite\NHibernate.Spatial.SpatiaLite.csproj">
       <Project>{b91caf5e-62e2-4036-913e-068d6bc60ab5}</Project>
       <Name>NHibernate.Spatial.SpatiaLite</Name>
@@ -150,6 +146,14 @@
       <Project>{CF7F3A94-6560-4A2D-9BCE-F2B5A9583ECA}</Project>
       <Name>Tests.NHibernate.Spatial.vs2008</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="x64\SQLite.Interop.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="x86\SQLite.Interop.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

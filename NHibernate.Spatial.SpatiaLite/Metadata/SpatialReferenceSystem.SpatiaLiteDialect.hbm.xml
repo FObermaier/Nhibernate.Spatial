@@ -12,7 +12,7 @@
 		<property name="AuthorityName"	column="auth_name"	type="String"/>
 		<property name="AuthoritySRID"	column="auth_srid"  type="Int32"/>
     <property name="Proj4Text"      column="proj4text"  type="String"/>
-		<property name="WellKnownText"	column="srs_wkt"		type="String"/>
+		<property name="WellKnownText"	column="srtext"		type="String"/>
 	</class>
 
 </hibernate-mapping>

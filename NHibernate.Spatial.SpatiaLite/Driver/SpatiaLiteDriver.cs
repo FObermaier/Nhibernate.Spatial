@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.IO;
+using System.Reflection;
 using NHibernate.Driver;
 using log4net;
 using Environment = System.Environment;
@@ -18,8 +19,11 @@ namespace NHibernate.Spatial.Driver
             if (path == null)
                 throw new Exception();
 
-            var asr = new System.Configuration.AppSettingsReader();
-            string spatiaLitePath = (string)asr.GetValue("SpatiaLitePath", typeof(string));
+            var directory = Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).LocalPath);
+            if (string.IsNullOrEmpty(directory))
+                throw new Exception();
+
+            var spatiaLitePath = Path.Combine(directory, IntPtr.Size == 4 ? "x86" : "x64");
             if (string.IsNullOrEmpty(spatiaLitePath))
             {
                 Log.Info("SpatiaLite path not configured.");
@@ -54,29 +58,29 @@ namespace NHibernate.Spatial.Driver
                 command.CommandText = "PRAGMA foreign_keys = ON;";
                 command.ExecuteNonQuery();
 
-                var path = Path.Combine("", "libspatialite-2.dll");
+                var path = "spatialite.dll";
                 command.CommandText = string.Format("SELECT load_extension('{0}');", path);
                 command.ExecuteNonQuery();
 
-                command.CommandText = @"SELECT InitSpatialMetadata() WHERE CheckSpatialMetadata()=0;";
+                command.CommandText = @"SELECT InitSpatialMetadata('NONE') WHERE CheckSpatialMetadata()=0;";
                 command.ExecuteNonQuery();
                 
-                //Maybe add srs_wkt
-                try
-                {
-                    command.CommandText = "SELECT \"sql\" FROM \"sqlite_master\" WHERE \"name\"='spatial_ref_sys';";
-                    var res = command.ExecuteScalar();
-                    if (res == DBNull.Value || ((string)res).IndexOf("srs_wkt") == -1)
-                    {
-                        //command.CommandText = "SELECT \"srs_wkt\" FROM \"spatial_ref_sys\" LIMIT 1;";
-                        //var result = command.ExecuteScalar();
-                        command.CommandText = "ALTER TABLE spatial_ref_sys ADD COLUMN \"srs_wkt\" TEXT;";
-                        command.ExecuteNonQuery();
-                    }
-                }
-                catch (Exception)
-                {
-                }
+                ////Maybe add srs_wkt
+                //try
+                //{
+                //    command.CommandText = "SELECT \"sql\" FROM \"sqlite_master\" WHERE \"name\"='spatial_ref_sys';";
+                //    var res = command.ExecuteScalar();
+                //    if (res == DBNull.Value || ((string)res).IndexOf("srs_wkt") == -1)
+                //    {
+                //        //command.CommandText = "SELECT \"srs_wkt\" FROM \"spatial_ref_sys\" LIMIT 1;";
+                //        //var result = command.ExecuteScalar();
+                //        command.CommandText = "ALTER TABLE spatial_ref_sys ADD COLUMN \"srs_wkt\" TEXT;";
+                //        command.ExecuteNonQuery();
+                //    }
+                //}
+                //catch (Exception)
+                //{
+                //}
             }
         }
 

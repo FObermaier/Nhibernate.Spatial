@@ -18,6 +18,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using GeoAPI.Geometries;
 using NHibernate.UserTypes;
 using NHibernate.Spatial.Dialect;
 
@@ -217,7 +218,12 @@ namespace NHibernate.Spatial.Type
             get { return this.geometryUserType.Dimension; }
         }
 
-		/// <summary>
+	    public object ToNative(IGeometry geometry)
+	    {
+	        return geometryUserType.ToNative(geometry);
+	    }
+
+	    /// <summary>
 		/// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
 		/// </summary>
 		/// <param name="x">The first object to compare.</param>

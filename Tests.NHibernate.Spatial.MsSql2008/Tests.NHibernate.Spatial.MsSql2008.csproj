@@ -57,10 +57,6 @@
     <Reference Include="NetTopologySuite.IO.PostGis">
       <HintPath>..\packages\NetTopologySuite.IO.1.13.2\lib\net35-client\NetTopologySuite.IO.PostGis.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -89,6 +85,10 @@
     <Compile Include="TestConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\src\NHibernate\NHibernate.csproj">
+      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NHibernate.Spatial.MsSql2008\NHibernate.Spatial.MsSql2008.csproj">
       <Project>{EAC092D9-6D47-4A30-803C-7A8583F99DFE}</Project>
       <Name>NHibernate.Spatial.MsSql2008</Name>

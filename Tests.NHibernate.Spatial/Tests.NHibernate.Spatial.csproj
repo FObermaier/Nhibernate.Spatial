@@ -68,15 +68,15 @@
     <Reference Include="NetTopologySuite.IO.PostGis">
       <HintPath>..\packages\NetTopologySuite.IO.1.13.2\lib\net35-client\NetTopologySuite.IO.PostGis.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="PowerCollections">
       <HintPath>..\packages\NetTopologySuite.1.13.2\lib\net35-client\PowerCollections.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Linq, Version=1.13.171.1, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Core\lib\net\3.5\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -147,6 +147,10 @@
     <EmbeddedResource Include="OgcSfSql11Compliance\Model\Stream.hbm.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Core\src\NHibernate\NHibernate.csproj">
+      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NetTopologySuite.TestRunner\NetTopologySuite.TestRunner.csproj">
       <Project>{13669184-2446-404f-8894-5e20b6c3fcc6}</Project>
       <Name>NetTopologySuite.TestRunner</Name>

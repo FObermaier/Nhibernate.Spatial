@@ -259,7 +259,7 @@ namespace NHibernate.Spatial.Oracle
             {
                 ICoordinateSequence cs = null;
                 int numCompounds = 0;
-                if (info.getElementType(i).isCompound())
+                if (sdoGeom.getElementType(i).isCompound())
                 {
                     numCompounds = info.getNumCompounds(i);
                     cs = Add(cs, GetCompoundCSeq(i + 1, i + numCompounds, sdoGeom));

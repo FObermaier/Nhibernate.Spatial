@@ -15,6 +15,7 @@
 // along with NHibernate.Spatial; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 
+using GeoAPI.Geometries;
 using NHibernate.UserTypes;
 
 namespace NHibernate.Spatial.Type
@@ -38,5 +39,12 @@ namespace NHibernate.Spatial.Type
         /// [3DIS] Gets the Dimension [2,3]
         /// </summary>
         int Dimension { get; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="geometry"></param>
+        /// <returns></returns>
+	    object ToNative(IGeometry geometry);
 	}
 }

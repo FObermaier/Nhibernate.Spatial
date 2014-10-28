@@ -88,8 +88,16 @@ namespace NHibernate.Spatial.Type
             }
 
             var ordinates = Ordinates.XY;
-            if (_forceZ) ordinates |= Ordinates.Z;
-            if (_forceM) ordinates |= Ordinates.M;
+            if (_forceZ)
+            {
+                ordinates |= Ordinates.Z;
+                //ToDo check and/or update dimension
+            }
+            if (_forceM)
+            {
+                ordinates |= Ordinates.M;
+                //ToDo check and/or update dimension
+            }
 
             _reader = new GaiaGeoReader {HandleOrdinates = ordinates};
             _writer = new GaiaGeoWriter {HandleOrdinates = ordinates, UseCompressed = _compressed};

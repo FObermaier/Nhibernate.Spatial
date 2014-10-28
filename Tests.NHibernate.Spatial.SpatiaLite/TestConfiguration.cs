@@ -18,7 +18,9 @@ namespace Tests.NHibernate.Spatial
 			properties[Environment.ConnectionProvider] = typeof(DebugConnectionProvider).AssemblyQualifiedName;
 			properties[Environment.ConnectionDriver] = typeof(SpatiaLiteDriver).AssemblyQualifiedName;
 			properties[Environment.ConnectionString] = Settings.Default.ConnectionString;
-			//properties[Environment.Hbm2ddlAuto] = "create-drop";
+            //properties[Environment.]
+            //properties[Environment.Hbm2ddlAuto] = "create-drop";
+            //properties[Environment.PropertyBytecodeProvider]
 			configuration.SetProperties(properties);
 		}
 

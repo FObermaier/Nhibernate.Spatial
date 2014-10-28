@@ -84,18 +84,19 @@ namespace NHibernate.Spatial.Dialect
 		/// <returns></returns>
 		SqlString GetSpatialRelateString(object geometry, object anotherGeometry, object pattern, bool isStringPattern, bool criterion);
 
-		/// <summary>
-		/// It builds a SQL spatial relation expression.
-		/// </summary>
-		/// <remarks>
-		/// One parameter placeholder must be added to the SqlString.
-		/// </remarks>
-		/// <param name="geometry">SQL expression returning a geometry</param>
-		/// <param name="relation">Spatial relation</param>
-		/// <param name="anotherGeometry">A string SQL geometry expression or a Parameter.Placeholder</param>
-		/// <returns>A <c><SqlString/c> object containing
-		/// a SQL spatial relation expression</returns>
-		SqlString GetSpatialRelationString(object geometry, SpatialRelation relation, object anotherGeometry, bool criterion);
+	    /// <summary>
+	    /// It builds a SQL spatial relation expression.
+	    /// </summary>
+	    /// <remarks>
+	    /// One parameter placeholder must be added to the SqlString.
+	    /// </remarks>
+	    /// <param name="geometry">SQL expression returning a geometry</param>
+	    /// <param name="relation">Spatial relation</param>
+	    /// <param name="anotherGeometry">A string SQL geometry expression or a Parameter.Placeholder</param>
+		/// <param name="criterion">if set to <c>true</c> [criterion].</param>
+	    /// <returns>A <c>SqlString</c> object containing
+	    /// a SQL spatial relation expression</returns>
+	    SqlString GetSpatialRelationString(object geometry, SpatialRelation relation, object anotherGeometry, bool criterion);
 
 		/// <summary>
 		/// It builds a SQL spatial filter expression.
@@ -103,7 +104,7 @@ namespace NHibernate.Spatial.Dialect
 		/// <remarks>
 		/// One parameter placeholder must be added to the SqlString.
 		/// </remarks>
-		/// <returns>A <c><SqlString/c> object containing
+        /// <returns>A <c>SqlString</c> object containing
 		/// a SQL spatial relation expression</returns>
 		SqlString GetSpatialFilterString(string tableAlias, string geometryColumnName, string primaryKeyColumnName, string tableName, Parameter parameter);
 

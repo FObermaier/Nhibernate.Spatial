@@ -62,6 +62,7 @@ namespace NHibernate.Spatial.Linq.Functions
 			this.Merge(new NumPointsGenerator());
 			
 			this.Merge(new RelateGenerator());
+            this.Merge(new ToDbGeometryGenerator());
 		}
 	}
 

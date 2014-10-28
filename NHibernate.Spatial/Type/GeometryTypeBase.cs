@@ -227,7 +227,7 @@ namespace NHibernate.Spatial.Type
 				    if (ga.OgcGeometryType == OgcGeometryType.GeometryCollection &&
 				        gb.OgcGeometryType == OgcGeometryType.GeometryCollection)
 				    {
-				        if (ga.IsEmpty && gb.IsEmpty) return true;
+                        return ga.EqualsExact(gb);
 				    }
 
                     return  ga.Equals(gb);
@@ -275,6 +275,7 @@ namespace NHibernate.Spatial.Type
 				{
 					this.subtype = parameterSubtype;
 				}
+
                 //[3DIS]
 			    string strDimension;
                 parameters.TryGetValue("dimension", out strDimension);
@@ -282,6 +283,7 @@ namespace NHibernate.Spatial.Type
                 {
                     Int32.TryParse(strDimension, out this.dimension);
                 }
+                
 			}
 		}
 
@@ -311,7 +313,17 @@ namespace NHibernate.Spatial.Type
             get { return this.dimension; }
         }
 
-		/// <summary>
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="geometry"></param>
+        /// <returns></returns>
+	    public object ToNative(IGeometry geometry)
+	    {
+	        return FromGeometry(geometry);
+	    }
+
+	    /// <summary>
 		/// Compares two objects and returns a value indicating whether one is less than, equal to, or greater than the other.
 		/// </summary>
 		/// <param name="x">The first object to compare.</param>
